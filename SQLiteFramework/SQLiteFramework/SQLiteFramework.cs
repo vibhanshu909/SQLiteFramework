@@ -759,32 +759,32 @@ namespace SQLiteFramework
     }
     #region Attributes For SQLite
     [AttributeUsage(AttributeTargets.Property)]
-    class Field : System.Attribute
+    public class Field : System.Attribute
     {
         public Field() { }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class PrimaryKey : System.Attribute
+    public class PrimaryKey : System.Attribute
     {
         public PrimaryKey() { }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class Unique : System.Attribute
+    public class Unique : System.Attribute
     {
         public Unique() { }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class NotNull : System.Attribute
+    public class NotNull : System.Attribute
     {
         public NotNull() { }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class AutoIncrement : System.Attribute
+    public class AutoIncrement : System.Attribute
     {
         public AutoIncrement() { }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class Default : System.Attribute
+    public class Default : System.Attribute
     {
         public object Value { get; set; }
         public Default(object value)
@@ -793,7 +793,7 @@ namespace SQLiteFramework
         }
     }
     [AttributeUsage(AttributeTargets.Property)]
-    class DirtyBit : System.Attribute
+    public class DirtyBit : System.Attribute
     {
         public DirtyBit() { }
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SQLiteFramework</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>vibhanshu pandey</authors>
+    <owners>vibhanshu pandey</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Create Databases and Tables dynamically just by extending SQLiteModel class and applying proper Attributes. No query Generation Whatsoever.</description>
+    <releaseNotes>Initial Release</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Databases Tables Models NoSQL NoQUERY Attributes SQLiteFramework SQLiteModel SQLite</tags>
+  </metadata>
+</package>

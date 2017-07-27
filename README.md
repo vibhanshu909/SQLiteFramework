@@ -12,7 +12,7 @@ Install-package SQLiteFramework
 Step 2: Create a Project SQLiteFrameworkDemo
 Step 3: Create a StudentModel.cs file as per your Model requirement.
 
---------------------------------StudentModel.cs-------------------------------------------------
+---------------------------------------------------StudentModel.cs-----------------------------------------------------
 
 using SQLiteFramework;
 namespace SQLiteFrameworkDemo
@@ -45,29 +45,85 @@ namespace SQLiteFrameworkDemo
 
 Step 4: Create Another Class MainProgram.cs
 
+------------------------------------------------------MainProgram.cs-------------------------------------------------------
+
 using System;
 using System.Collections.Generics;
 
 namespace SQLiteFrameworkDemo
 {
-  public class MainProgram
-  {
-    public static void Main(String[] args)
+    public class MainProgram
     {
-              StudentModel Someone = new StudentModel();
-              Someone.Name = "Someone";
-              Someone.Age = 30;
-              Someone.PhoneNumber =(ulong)new Random().Next();
-              bool status=StudentModel.Insert(Someone);
-              this.Grid.DataContext = Someone;
-              if (status)
-              {
-                  List<StudentModel> list = StudentModel.All<StudentModel>();
-                  foreach (StudentModel item in list)
-                  {
-                      Console.WriteLine(item.ID+"|"+item.Name+"|"+item.Age+"|"+item.Gender+"|"+item.PhoneNumber);
-                  }
-              }
+        public static void Main(String[] args)
+        {
+            StudentModel Someone = new StudentModel();
+            Someone.Name = "Someone";
+            Someone.Age = 30;
+            Someone.PhoneNumber = (ulong)new Random().Next();
+            bool status = StudentModel.Insert(Someone);
+            this.Grid.DataContext = Someone;
+            if (status)
+            {
+                List<StudentModel> list = StudentModel.All<StudentModel>();
+                foreach (StudentModel item in list)
+                {
+                    Console.WriteLine(item.ID + "|" + item.Name + "|" + item.Age + "|" + item.Gender + "|" + item.PhoneNumber);//printing All the aquired rows one by one.
+                }
+            }
+        }
     }
-  }
 }
+
+Step 5: Making Advance and more Complicated Selection.
+
+SQLiteFramework provides you with a set of Classes and method to build advance selection Processes, like:-
+
+SelectionBuilder: SelectionBuilder class provides you a set of method to build complicated and advance selection conditions.
+Note: Except Build Method All Methods in SelectionBuilder returns a SelectionBuilder object, so that you can chain a long method calls.
+
+Methods available are:-
+
+Where(string)
+IsLessThan(string)
+IsLessThanEqualsTo(string)
+IsEqualsTo(string)
+IsNotEqualsTo(string)
+IsCaseEqualsTo(string)      //For String Comparison
+IsCaseNotEqualsTo(string)   //For String Comparison
+IsGreaterThan(string)
+IsGreaterThanEqualsTo(string)
+And(string)
+Or(string)
+Not([Optional string])
+Like(string)
+Glob(string)
+Exists(string subQuery)
+Between(int,int)
+In(string)
+Limit(int)
+
+Selection Builder also provides a way to pass Parameter to these functions, to prevent SQL injection.
+example:
+
+SelectionBuilder sb=new SelectionBuilder().Where("ID")
+                                            .IsGreaterThanEqualsTo("@id")
+                                            .AddParams("@id",4 //This value maybe dynamic or input from user)
+                                            .Build();
+
+List<StudentModel> List=StudentModel.Select<StudentModel>(sb);
+// This will give you all the records with ID > 4 from StudentModel table.
+
+You can also pass a dictionary of parameter to the SelectionBuilder object and it will automatically choose the required ones.
+
+Dictionary<string,string> params=new Dictionary<string,string>();
+params.Add("@id",4)
+params.Add("@age",20);
+
+SelectionBuilder sb=new SelectionBuilder().Where("ID")
+                                            .IsGreaterThanEqualsTo("@id")
+                                            .And("Age")
+                                            .IsLessThan("@age")
+                                            .SetParams(params)
+                                            .Build();
+                                            
+Note: You must set the parameters before you build the SelectionBuilder object, else you'll get a SQLiteException when selecting using this SelectionBuilder object.

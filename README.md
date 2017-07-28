@@ -13,7 +13,7 @@ Step 2: Create a Project SQLiteFrameworkDemo
 Step 3: Create a StudentModel.cs file as per your Model requirement.
 
 ---------------------------------------------------StudentModel.cs-----------------------------------------------------
-
+```cs
 using SQLiteFramework;
 namespace SQLiteFrameworkDemo
 {
@@ -42,11 +42,11 @@ namespace SQLiteFrameworkDemo
         public StudentModel() { }
     }
 }
-
+```
 Step 4: Create Another Class MainProgram.cs
 
 ------------------------------------------------------MainProgram.cs-------------------------------------------------------
-
+```cs
 using System;
 using System.Collections.Generics;
 
@@ -74,7 +74,7 @@ namespace SQLiteFrameworkDemo
         }
     }
 }
-
+```
 Step 5: Making Advance and more Complicated Selection.
 
 SQLiteFramework provides you with a set of Classes and method to build advance selection Processes, like:-
@@ -105,7 +105,7 @@ Limit(int)
 
 Selection Builder also provides a way to pass Parameter to these functions, to prevent SQL injection.
 example:
-
+```cs
 SelectionBuilder sb=new SelectionBuilder().Where("ID")
                                             .IsGreaterThanEqualsTo("@id")
                                             .AddParams("@id",4 //This value maybe dynamic or input from user)
@@ -113,9 +113,9 @@ SelectionBuilder sb=new SelectionBuilder().Where("ID")
 
 List<StudentModel> List=StudentModel.Select<StudentModel>(sb);
 // This will give you all the records with ID > 4 from StudentModel table.
-
+```
 You can also pass a dictionary of parameter to the SelectionBuilder object and it will automatically choose the required ones.
-
+```cs
 Dictionary<string,string> params=new Dictionary<string,string>();
 params.Add("@id",4)
 params.Add("@age",20);
@@ -126,5 +126,5 @@ SelectionBuilder sb=new SelectionBuilder().Where("ID")
                                             .IsLessThan("@age")
                                             .SetParams(params)
                                             .Build();
-                                            
+```                                            
 Note: You must set the parameters before you build the SelectionBuilder object, else you'll get a SQLiteException when selecting using this SelectionBuilder object.

@@ -17,6 +17,7 @@ Open Package Manager Console and Type: **Install-Package SQLiteFramework**
 ## Getting Started
 
 Step 1: Create a Project SQLiteFrameworkDemo
+
 Step 2: Create a StudentModel.cs file as per your Model requirement.
 
 ---------------------------------------------------StudentModel.cs-----------------------------------------------------

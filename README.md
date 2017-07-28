@@ -56,6 +56,7 @@ namespace SQLiteFrameworkDemo
     {
         public static void Main(String[] args)
         {
+            StudentModel.UseDatabase("StudentDB");
             StudentModel Someone = new StudentModel();
             Someone.Name = "Someone";
             Someone.Age = 30;

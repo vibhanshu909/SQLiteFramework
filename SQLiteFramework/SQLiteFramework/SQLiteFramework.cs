@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -14,6 +15,7 @@ namespace SQLiteFramework
         [PrimaryKey, AutoIncrement]
         public ulong ID { get; set; }
 
+        public static bool IsDisposed { get { return Adap.IsDisposed; } }
         protected class Adapter
         {
             private SQLiteConnection sql_con;
@@ -21,11 +23,19 @@ namespace SQLiteFramework
             private SQLiteDataAdapter DB;
             private DataSet DS = new DataSet();
 
+            public bool IsDisposed { get; set; } = true;
             private void SetConnection()
             {
-                //Data Source=DemoT.db;New=False;
-                sql_con = new SQLiteConnection("Data Source=DEMO.sqlite;Compress=True;Version=3;");
+                if (Database == null)
+                {
+                    throw new SQLiteException("No Database Selected. Please Call UseDatabase Method to select a database.");
+                }
+                sql_con = new SQLiteConnection("Data Source=" + Database + ";Compress=True;Version=3;");
+                this.IsDisposed = false;
             }
+            private string _Database = null;
+            public string Database { get { return this._Database; } set { this._Database = value + ".sqlite"; } }
+
             public int ExecuteQuery(string txtQuery)
             {
                 SetConnection();
@@ -33,7 +43,6 @@ namespace SQLiteFramework
                 sql_cmd = sql_con.CreateCommand();
                 sql_cmd.CommandText = txtQuery;
                 int result = sql_cmd.ExecuteNonQuery();
-                sql_con.Close();
                 return result;
             }
             public int ExecuteMultipleQuery(List<string> QueryList, Dictionary<string, string> Params = null)
@@ -53,7 +62,6 @@ namespace SQLiteFramework
                     if (sql_cmd.ExecuteNonQuery() < 1)
                         return 0;
                 }
-                sql_con.Close();
                 return 1;
             }
             public DataSet ExecuteDataQuery(string query, Dictionary<string, string> Params = null)
@@ -70,8 +78,14 @@ namespace SQLiteFramework
                 DB = new SQLiteDataAdapter(sql_cmd);
                 DS.Reset();
                 DB.Fill(DS);
-                sql_con.Close();
                 return DS;
+            }
+            public void Dispose()
+            {
+                sql_cmd.Dispose();
+                sql_con.Close();
+                sql_con.Dispose();
+                this.IsDisposed = true;
             }
         }
         public class Conditions
@@ -249,117 +263,10 @@ namespace SQLiteFramework
 
         private static Adapter Adap = new Adapter();
 
-
-        private static void Create(object This)
+        #region Usual Operations
+        public static void UseDatabase(string database)
         {
-            string output = "CREATE TABLE IF NOT EXISTS ";
-            Type type = This.GetType();
-            string[] temp = type.ToString().Split('.');
-            output += temp[temp.Length - 1];
-
-            object[] attr = type.GetCustomAttributes(true);
-            foreach (object a in attr)
-            {
-                Console.WriteLine("Class Attributes: " + a);
-            }
-            output += @"(";
-            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(type);
-            foreach (PropertyInfo p in Prop)
-            {
-                output += @"'" + p.Name + @"' ";
-                if (p.PropertyType == typeof(bool))
-                {
-                    output += @"BOOLEAN";
-                }
-                else if (p.PropertyType == typeof(sbyte) ||
-                    p.PropertyType == typeof(short) ||
-                    p.PropertyType == typeof(int) ||
-                    p.PropertyType == typeof(long) ||
-
-                    p.PropertyType == typeof(byte) ||
-                    p.PropertyType == typeof(ushort) ||
-                    p.PropertyType == typeof(uint) ||
-                    p.PropertyType == typeof(ulong))
-                {
-                    output += @"INTEGER";
-                }
-                else if (p.PropertyType == typeof(float) ||
-                    p.PropertyType == typeof(double) ||
-                    p.PropertyType == typeof(decimal))
-                {
-                    output += @"REAL";
-                }
-                else if (p.PropertyType == typeof(string))
-                {
-                    output += @"VARCHAR";
-                }
-                else if (p.PropertyType == typeof(DateTime))
-                {
-                    output += @"TEXT DEFAULT(datetime('now','localtime'))";
-                }
-                else
-                {
-                    throw new SQLiteException("Type Not Supported in the underlying Database System.");
-                }
-                //output+=Marshal.SizeOf(p.PropertyType);
-                foreach (Attribute a in p.GetCustomAttributes())
-                {
-                    Console.WriteLine("Property: " + p.Name + " PropertyAttributes: " + a);
-                    if (a.ToString().Equals(typeof(PrimaryKey).ToString()))
-                    {
-                        output += " PRIMARY KEY";
-                    }
-                    else if (a.ToString().Equals(typeof(Unique).ToString()))
-                    {
-                        output += " UNIQUE";
-                    }
-                    else if (a.ToString().Equals(typeof(NotNull).ToString()))
-                    {
-                        output += " NOT NULL";
-                    }
-                    else if (a.ToString().Equals(typeof(AutoIncrement).ToString()))
-                    {
-                        if (p.PropertyType == typeof(sbyte) ||
-                            p.PropertyType == typeof(short) ||
-                            p.PropertyType == typeof(int) ||
-                            p.PropertyType == typeof(long) ||
-
-                            p.PropertyType == typeof(byte) ||
-                            p.PropertyType == typeof(ushort) ||
-                            p.PropertyType == typeof(uint) ||
-                            p.PropertyType == typeof(ulong))
-                        {
-                            output += " AUTOINCREMENT";
-                        }
-                        else
-                        {
-                            throw new SQLiteException("AutoIncrement can only be applied to Integer fields");
-                        }
-                    }
-                    else if (a.ToString().Equals(typeof(Default).ToString()))
-                    {
-                        Default d = a as Default;
-                        string value = d.Value.ToString();
-                        if (p.PropertyType == typeof(bool))
-                        {
-                            if (((bool)d.Value) == true)
-                            {
-                                value = "1";
-                            }
-                            else
-                                value = "0";
-                        }
-                        output += " DEFAULT '" + value + "'";
-                    }
-                }
-                output += @", ";
-            }
-            output = output.Remove(output.Length - 2, 2);
-            output += @")";
-            Console.WriteLine(output);
-            Adapter Adap = new Adapter();
-            Adap.ExecuteQuery(output);
-            //Adap.ExecuteQuery();
+            Adap.Database = database;
         }
         public static bool Insert(object This, bool CreateNew = false)
         {
@@ -457,7 +364,6 @@ namespace SQLiteFramework
             output += "(" + key + ") VALUES(" + value + ")";
             Console.WriteLine(output);
 
-            Adapter Adap = new Adapter();
             try
             {
                 if (Adap.ExecuteQuery(output) == 0) return false;
@@ -568,7 +474,132 @@ namespace SQLiteFramework
                 return true;
         }
 
+        #endregion
+
+        #region Backup and Restore Operation
+        public static void Backup(string file)
+        {
+            File.Copy(Adap.Database, file);
+        }
+        public static void Restore(string file)
+        {
+            Adap.Dispose();
+            File.Delete(Adap.Database);
+            File.Copy(file, Adap.Database);
+        }
+        #endregion
+
         #region Support Methods
+        private static void Create(object This)
+        {
+            string output = "CREATE TABLE IF NOT EXISTS ";
+            Type type = This.GetType();
+            string[] temp = type.ToString().Split('.');
+            output += temp[temp.Length - 1];
+
+            object[] attr = type.GetCustomAttributes(true);
+            foreach (object a in attr)
+            {
+                Console.WriteLine("Class Attributes: " + a);
+            }
+            output += @"(";
+            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(type);
+            foreach (PropertyInfo p in Prop)
+            {
+                output += @"'" + p.Name + @"' ";
+                if (p.PropertyType == typeof(bool))
+                {
+                    output += @"BOOLEAN";
+                }
+                else if (p.PropertyType == typeof(sbyte) ||
+                    p.PropertyType == typeof(short) ||
+                    p.PropertyType == typeof(int) ||
+                    p.PropertyType == typeof(long) ||
+
+                    p.PropertyType == typeof(byte) ||
+                    p.PropertyType == typeof(ushort) ||
+                    p.PropertyType == typeof(uint) ||
+                    p.PropertyType == typeof(ulong))
+                {
+                    output += @"INTEGER";
+                }
+                else if (p.PropertyType == typeof(float) ||
+                    p.PropertyType == typeof(double) ||
+                    p.PropertyType == typeof(decimal))
+                {
+                    output += @"REAL";
+                }
+                else if (p.PropertyType == typeof(string))
+                {
+                    output += @"VARCHAR";
+                }
+                else if (p.PropertyType == typeof(DateTime))
+                {
+                    output += @"TEXT DEFAULT(datetime('now','localtime'))";
+                }
+                else
+                {
+                    throw new SQLiteException("Type Not Supported in the underlying Database System.");
+                }
+                //output+=Marshal.SizeOf(p.PropertyType);
+                foreach (Attribute a in p.GetCustomAttributes())
+                {
+                    Console.WriteLine("Property: " + p.Name + " PropertyAttributes: " + a);
+                    if (a.ToString().Equals(typeof(PrimaryKey).ToString()))
+                    {
+                        output += " PRIMARY KEY";
+                    }
+                    else if (a.ToString().Equals(typeof(Unique).ToString()))
+                    {
+                        output += " UNIQUE";
+                    }
+                    else if (a.ToString().Equals(typeof(NotNull).ToString()))
+                    {
+                        output += " NOT NULL";
+                    }
+                    else if (a.ToString().Equals(typeof(AutoIncrement).ToString()))
+                    {
+                        if (p.PropertyType == typeof(sbyte) ||
+                            p.PropertyType == typeof(short) ||
+                            p.PropertyType == typeof(int) ||
+                            p.PropertyType == typeof(long) ||
+
+                            p.PropertyType == typeof(byte) ||
+                            p.PropertyType == typeof(ushort) ||
+                            p.PropertyType == typeof(uint) ||
+                            p.PropertyType == typeof(ulong))
+                        {
+                            output += " AUTOINCREMENT";
+                        }
+                        else
+                        {
+                            throw new SQLiteException("AutoIncrement can only be applied to Integer fields");
+                        }
+                    }
+                    else if (a.ToString().Equals(typeof(Default).ToString()))
+                    {
+                        Default d = a as Default;
+                        string value = d.Value.ToString();
+                        if (p.PropertyType == typeof(bool))
+                        {
+                            if (((bool)d.Value) == true)
+                            {
+                                value = "1";
+                            }
+                            else
+                                value = "0";
+                        }
+                        output += " DEFAULT '" + value + "'";
+                    }
+                }
+                output += @", ";
+            }
+            output = output.Remove(output.Length - 2, 2);
+            output += @")";
+            Console.WriteLine(output);
+            Adap.ExecuteQuery(output);
+            //Adap.ExecuteQuery();
+        }
         private static string GenerateUpdateQuery<T>(object This)
         {
             string output = "UPDATE ";
@@ -744,17 +775,15 @@ namespace SQLiteFramework
             return tProp;*/
             return Prop;
         }
-
         #endregion
-        public static T newInstance<T>()
+        public static T NewInstance<T>()
         {
             T Instance = Activator.CreateInstance<T>();
-            //(Instance as SQLiteModel).PropertyChanged += (s, args) =>
-            //{
-            //    Console.WriteLine("Property Changed");
-            //    (Instance as SQLiteModel).Dirty = true;
-            //};
             return Instance;
+        }
+        public static void Dispose()
+        {
+            Adap.Dispose();
         }
     }
     #region Attributes For SQLite
@@ -798,5 +827,4 @@ namespace SQLiteFramework
         public DirtyBit() { }
     }
     #endregion
-
 }

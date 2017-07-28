@@ -14,15 +14,10 @@ You can search and install SQLiteFramework from Manage NuGet package in visual s
 Or
 Open Package Manager Console and Type: **Install-Package SQLiteFramework**
 
-## Example:
+## Getting Started
 
-Step 1: Install the NuGet Package
-
-open up NuGet Package Manager Console and Type:
-Install-package SQLiteFramework
-
-Step 2: Create a Project SQLiteFrameworkDemo
-Step 3: Create a StudentModel.cs file as per your Model requirement.
+Step 1: Create a Project SQLiteFrameworkDemo
+Step 2: Create a StudentModel.cs file as per your Model requirement.
 
 ---------------------------------------------------StudentModel.cs-----------------------------------------------------
 ```cs
@@ -55,7 +50,7 @@ namespace SQLiteFrameworkDemo
     }
 }
 ```
-Step 4: Create Another Class MainProgram.cs
+Step 3: Create Another Class MainProgram.cs
 
 ------------------------------------------------------MainProgram.cs-------------------------------------------------------
 ```cs
@@ -87,7 +82,7 @@ namespace SQLiteFrameworkDemo
     }
 }
 ```
-Step 5: Making Advance and more Complicated Selection.
+Step 4: Making Advance and more Complicated Selection.
 
 SQLiteFramework provides you with a set of Classes and method to build advance selection Processes, like:-
 
@@ -148,5 +143,4 @@ version 1.0.2
 * vibhanshu pandey
 
 ## License
-https://github.com/vibhanshu-github/SQLiteFramework/edit/master/LICENSE.md -automatic!
 [License](https://github.com/vibhanshu-github/SQLiteFramework/edit/master/LICENSE.md)

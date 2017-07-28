@@ -1,8 +1,20 @@
 # SQLiteFramework
 Create Databases and Tables dynamically just by extending SQLiteModel class and applying proper Attributes. No query Generation Whatsoever.
 It uses MVC Architecture based Approach, And provides a effective way to create persistent Models.
+ 
+## Prerequisites
+System.Data.SQLite
+Available on NuGet.
 
-Example:
+## Requirement
+Install SQLiteFramework from NuGet
+
+## Installing
+You can search and install SQLiteFramework from Manage NuGet package in visual studio.
+Or
+Open Package Manager Console and Type: **Install-Package SQLiteFramework**
+
+## Example:
 
 Step 1: Install the NuGet Package
 
@@ -84,26 +96,26 @@ Note: Except Build Method All Methods in SelectionBuilder returns a SelectionBui
 
 Methods available are:-
 
-Where(string)
-IsLessThan(string)
-IsLessThanEqualsTo(string)
-IsEqualsTo(string)
-IsNotEqualsTo(string)
-IsCaseEqualsTo(string)      //For String Comparison
-IsCaseNotEqualsTo(string)   //For String Comparison
-IsGreaterThan(string)
-IsGreaterThanEqualsTo(string)
-And(string)
-Or(string)
-Not([Optional string])
-Like(string)
-Glob(string)
-Exists(string subQuery)
-Between(int,int)
-In(string)
-Limit(int)
+* Where(string)
+* IsLessThan(string)
+* IsLessThanEqualsTo(string)
+* IsEqualsTo(string)
+* IsNotEqualsTo(string)
+* IsCaseEqualsTo(string)      //For String Comparison
+* IsCaseNotEqualsTo(string)   //For String Comparison
+* IsGreaterThan(string)
+* IsGreaterThanEqualsTo(string)
+* And(string)
+* Or(string)
+* Not([Optional string])
+* Like(string)
+* Glob(string)
+* Exists(string subQuery)
+* Between(int,int)
+* In(string)
+* Limit(int)
 
-Selection Builder also provides a way to pass Parameter to these functions, to prevent SQL injection.
+**Selection Builder** also provides a way to pass Parameter to these functions, to prevent SQL injection.
 example:
 ```cs
 SelectionBuilder sb=new SelectionBuilder().Where("ID")
@@ -127,4 +139,14 @@ SelectionBuilder sb=new SelectionBuilder().Where("ID")
                                             .SetParams(params)
                                             .Build();
 ```                                            
-Note: You must set the parameters before you build the SelectionBuilder object, else you'll get a SQLiteException when selecting using this SelectionBuilder object.
+Note: You must set the parameters before you build the SelectionBuilder object, else you'll get a **SQLiteException** when selecting using this SelectionBuilder object.
+
+## Version
+version 1.0.2
+
+## Authors
+* vibhanshu pandey
+
+## License
+https://github.com/vibhanshu-github/SQLiteFramework/edit/master/LICENSE.md -automatic!
+[License](https://github.com/vibhanshu-github/SQLiteFramework/edit/master/LICENSE.md)

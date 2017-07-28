@@ -144,4 +144,4 @@ version 1.0.2
 * vibhanshu pandey
 
 ## License
-[License](https://github.com/vibhanshu-github/SQLiteFramework/edit/master/LICENSE.md)
+[License](https://github.com/vibhanshu-github/SQLiteFramework/blob/master/LICENSE)

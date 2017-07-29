@@ -410,14 +410,14 @@ namespace SQLiteFramework
                 return Get<T>(output);
             }
         }
-        public static bool UpdateMultiple<T>(object ObjectList)
+        public static bool UpdateMultiple<T>(List<T> ObjectList)
         {
             Stopwatch sw = new Stopwatch();
             List<string> list = new List<string>();
             sw.Restart();
-            foreach (object This in (ObjectList as List<T>))
+            foreach (object This in ObjectList)
             {
-                list.Add(GenerateUpdateQuery<T>(This));
+                list.Add(GenerateUpdateQuery(This,typeof(T)));
             }
             Console.WriteLine("Time taken to Generate All Queries are: " + sw.Elapsed.ToString());
             sw.Restart();
@@ -429,10 +429,10 @@ namespace SQLiteFramework
             else
                 return false;
         }
-        public bool Update<T>()
+        public bool Update()
         {
             object This = this;
-            string output = GenerateUpdateQuery<T>(This);
+            string output = GenerateUpdateQuery(This,This.GetType());
             try
             {
                 Console.WriteLine("Update Query is: " + output);
@@ -446,14 +446,15 @@ namespace SQLiteFramework
             return true;
         }
 
-        public static bool Delete<T>(object This)
+        public bool Delete()
         {
+            object This = this;
             string output = "DELETE FROM ";
-            Type type = typeof(T);
+            Type type = this.GetType();
             string[] temp = type.ToString().Split('.');
             output += temp[temp.Length - 1];
 
-            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(typeof(T));
+            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(type);
             string Condition = "";
             foreach (PropertyInfo p in Prop)
             {
@@ -600,15 +601,14 @@ namespace SQLiteFramework
             Adap.ExecuteQuery(output);
             //Adap.ExecuteQuery();
         }
-        private static string GenerateUpdateQuery<T>(object This)
+        private static string GenerateUpdateQuery(object This,Type T)
         {
-            string output = "UPDATE ";
-            Type type = typeof(T);
-            string[] temp = type.ToString().Split('.');
+            string output = "UPDATE ";            
+            string[] temp = T.ToString().Split('.');
             output += temp[temp.Length - 1];
             output += " SET ";
 
-            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(typeof(T));
+            IEnumerable<PropertyInfo> Prop = GetPropertiesWithAttribute<Field>(T);
             string Condition = "";
             foreach (PropertyInfo p in Prop)
             {

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SQLiteFramework</id>
+    <version>1.0.3</version>
+    <title>SQLiteFramework</title>
+    <authors>vibhanshu pandey</authors>
+    <owners>vibhanshu pandey</owners>
+    <projectUrl>https://github.com/vibhanshu-github/SQLiteFramework</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Create Databases and Tables dynamically just by extending SQLiteModel class and applying proper Attributes. No query Generation Whatsoever. It uses MVC Architecture based Approach, And provides a effective way to create persistent Models.</description>    
+    <copyright>Copyright 2017</copyright>
+    <tags>SQLite SQLiteModel SQLiteFramework NoSQL NoQUERY Models Tables Attributes Databases</tags>
+    <releaseNotes>Backup and Restore Feature added</releaseNotes>
+  </metadata>
+</package>

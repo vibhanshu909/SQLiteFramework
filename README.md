@@ -115,7 +115,7 @@ example:
 ```cs
 SelectionBuilder sb=new SelectionBuilder().Where("ID")
                                             .IsGreaterThanEqualsTo("@id")
-                                            .AddParams("@id",4 //This value maybe dynamic or input from user)
+                                            .AddParams("@id",4 /*This value maybe dynamic or input from user*/)
                                             .Build();
 
 List<StudentModel> List=StudentModel.Select<StudentModel>(sb);

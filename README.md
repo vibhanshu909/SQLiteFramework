@@ -70,7 +70,6 @@ namespace SQLiteFrameworkDemo
             Someone.Age = 30;
             Someone.PhoneNumber = (ulong)new Random().Next();
             bool status = StudentModel.Insert(Someone);
-            this.Grid.DataContext = Someone;
             if (status)
             {
                 List<StudentModel> list = StudentModel.All<StudentModel>();
